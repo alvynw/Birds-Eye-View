@@ -25,8 +25,6 @@ def rotatePoint(center_x, center_y, point_x, point_y, theta):
     rotated_y = (point_x-center_x) * -math.sin(theta) + (point_y - center_y) * math.cos(theta) + center_y
     return [int(rotated_x), int(rotated_y)]
 
-print(rotatePoint(0, 0, 0, 2, 90))
-
 #dst should be larger than src
 def addImage(src, dst, dst_x, dst_y, src_x, src_y):
     src_rows, src_cols, src_ch = src.shape
@@ -34,7 +32,7 @@ def addImage(src, dst, dst_x, dst_y, src_x, src_y):
         = cv.add(dst[dst_y - src_y:dst_y + (src_rows - src_y), dst_x - src_x : dst_x + (src_cols - src_x),:], src[:, :, :])
     return src
 
-top_stream = cv.VideoCapture(2)
+top_stream = cv.VideoCapture(0)
 left_stream = cv.VideoCapture(1)
 
 ROBOT_WIDTH = 470

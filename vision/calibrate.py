@@ -35,7 +35,7 @@ for fname in images:
 
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
 
-PIK = "intrinsic.dat"
+PIK = "../intrinsic.dat"
 
 data = [mtx, dist, rvecs, tvecs]
 

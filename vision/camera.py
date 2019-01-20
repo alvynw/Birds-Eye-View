@@ -36,7 +36,7 @@ while(True):
 
 
     if key & 0xFF == ord('y'): #save on pressing 'y'
-        cv.imwrite(f'../images/calibration/calibration_image_{counter}.bmp',frame)
+        cv.imwrite('../images/calibration/calibration_image_%s.bmp' % counter,frame)
         counter +=1
 
 # When everything done, release the capture
