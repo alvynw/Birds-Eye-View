@@ -43,38 +43,42 @@ if __name__ == "__main__":
         # Capture frame-by-frame
         top_ret, top_frame = top_stream.read()
         left_ret, left_frame = left_stream.read()
+        right_frame = np.full((960, 1280, 3), 255, dtype=np.uint8)
+        bot_frame = np.full((960, 1280, 3), 255, dtype=np.uint8)
 
-        right_frame = np.full((960, 1280, 3), 255, dtype= np.uint8)
-        bot_frame = np.full((960, 1280, 3), 255, dtype= np.uint8)
-
+        top_frame = cv.resize(top_frame, (640, 480))
+        left_frame = cv.resize(left_frame, (640, 480))
+        right_frame = cv.resize(right_frame, (640, 480))
+        bot_frame = cv.resize(bot_frame, (640, 480))
 
         rows, cols, ch = top_frame.shape
         # print("rows:", rows, "cols: ", cols, "ch: ", ch)
 
-        src = np.float32([[46, 642], [272, 395], [924, 395], [1184, 642]])
-        dst = np.float32([[430, 960], [430, 540], [850, 540], [850, 960]])
-
-        # vision = np.float32([[46/2, 642/2], [272/2, 395/2], [924/2, 395/2], [1184/2, 642/2]])
-        # dst = np.float32([[430/2, 960/2], [430/2, 540/2], [850/2, 540/2], [850/2, 960/2]])
+        src = np.float32([[46 // 2, 642 // 2], [272 // 2, 395 // 2], [924 // 2, 395 // 2], [1184 // 2, 642 // 2]])
+        dst = np.float32([[430 // 2, 960 // 2], [430 // 2, 540 // 2], [850 // 2, 540 // 2], [850 // 2, 960 // 2]])
 
         M = cv.getPerspectiveTransform(src, dst)
 
-        top = cv.warpPerspective(top_frame, M, (cols,rows))
+        top = cv.warpPerspective(top_frame, M, (cols, rows))
         left = cv.warpPerspective(left_frame, M, (cols, rows))
+        right = cv.warpPerspective(right_frame, M, (cols, rows))
+        bot = cv.warpPerspective(bot_frame, M, (cols, rows))
 
-        bufferedImageSize = border = int(math.sqrt(rows ** 2 + cols ** 2))
+        bufferedImageSize = int(math.sqrt(rows ** 2 + cols ** 2))
 
         birds_eye = np.zeros((bufferedImageSize * 2 + ROBOT_WIDTH, bufferedImageSize * 2 + ROBOT_HEIGHT, 3), dtype = np.uint8)
 
         top, top_horizontal_buffer, top_vertical_buffer = addBuffer(top)
         top = rotateImage(top, 135)
-        cv.imshow('top', top)
-        #cv.imshow('left', left)
-        top_point = rotatePoint(top.shape[1] // 2, top.shape[0] // 2, top.shape[1] // 2, top.shape[0] - top_vertical_buffer // 2, 135)
-
-        # print(birds_eye.shape[1] // 2, birds_eye.shape[0] // 2, top_point[0], top_point[1])
-
+        top_point = rotatePoint(top.shape[1] // 2, top.shape[0] // 2, top.shape[1] // 2,
+                                top.shape[0] - top_vertical_buffer // 2, 135)
         addImage(top, birds_eye, birds_eye.shape[1] // 2, birds_eye.shape[0] // 2, top_point[0], top_point[1])
+
+        left, left_horizontal_buffer, left_vertical_buffer = addBuffer(top)
+        left = rotateImage(left, 45)
+        left_point = rotatePoint(left.shape[1] // 2, left.shape[0] // 2, left.shape[1] // 2,
+                                left.shape[0] - left_vertical_buffer // 2, 45)
+        addImage(left, birds_eye, birds_eye.shape[1] // 2, birds_eye.shape[0] // 2, left_point[0], left_point[1])
 
         cv.imshow('birds eye', birds_eye)
 
