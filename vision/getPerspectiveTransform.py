@@ -5,6 +5,8 @@ import glob
 
 img = cv2.imread("../images/70degree test image.bmp")
 
+img = cv2.resize(img, (640, 480))
+
 rows, cols, ch = img.shape
 
 print("rows:",rows, "cols: ", cols, "ch: ", ch)
@@ -47,7 +49,10 @@ print("tvecs: ", tvecs)
 '''
 
 test_img = cv2.imread('../images/70degree test image.bmp')
-h,  w = test_img.shape[:2]
+
+test_img = cv2.resize(img, (640, 480))
+
+h, w = test_img.shape[:2]
 newcameramtx, roi=cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
 
 # undistort
@@ -58,9 +63,9 @@ x,y,w,h = roi
 undistorted = undistorted[y:y+h, x:x+w]
 
 
-src = np.float32([[46, 642], [272, 395], [924, 395], [1184, 642]])
+src = np.float32([[46 // 2, 642 // 2], [272 // 2, 395 // 2], [924 // 2, 395 // 2], [1184 // 2, 642 // 2]])
 
-dst = np.float32([[430, 960], [430, 540], [850, 540], [850, 960]])
+dst = np.float32([[430 // 2, 960 // 2], [430 // 2, 540 // 2], [850 // 2, 540 // 2], [850 // 2, 960 // 2]])
 
 M = cv2.getPerspectiveTransform(src, dst)
 
