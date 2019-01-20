@@ -8,18 +8,15 @@ while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
 
+    frame = cv.resize(frame, (640, 480))
+
     rows, cols, ch = frame.shape
-    #print(ret)
 
-    # Our operations on the frame come here
-    #gray = cv2.cvtColor(frame, cv2.COLOR_RGB)
-    #rows, cols, ch = frame.shape
+    print("rows:", rows, "cols: ", cols, "ch: ", ch)
 
-    #print("rows:", rows, "cols: ", cols, "ch: ", ch)
+    src = np.float32([[46 // 2, 642 // 2], [272 // 2, 395 // 2], [924 // 2, 395 // 2], [1184 // 2, 642 // 2]])
 
-    src = np.float32([[46, 642], [272, 395], [924, 395], [1184, 642]])
-
-    dst = np.float32([[430, 960], [430, 540], [850, 540], [850, 960]])
+    dst = np.float32([[430 // 2, 960 // 2], [430 // 2, 540 // 2], [850 // 2, 540 // 2], [850 // 2, 960 // 2]])
 
     M = cv.getPerspectiveTransform(src, dst)
 
@@ -27,7 +24,6 @@ while(True):
 
 
     key = cv.waitKey(1)
-    print(key)
     # Display the resulting frame
     cv.imshow('warped', transformed)
     cv.imshow('original', frame)
