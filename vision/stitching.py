@@ -1,12 +1,9 @@
 import cv2 as cv
 import numpy as np
 import math
-import pickle
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from SocketServer import ThreadingMixIn
-import Image
-import threading
-import time
+from PIL import Image
 import StringIO
 
 top_stream = cv.VideoCapture(0)
@@ -48,7 +45,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 	'''Threads stuff'''
 
 def main(): 
-	HOST = '127.0.0.1' # localhost
+	HOST = '' # localhost
 	PORT = 8080
 
 	global top_stream
