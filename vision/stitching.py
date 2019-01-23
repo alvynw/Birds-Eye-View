@@ -1,12 +1,8 @@
 import cv2 as cv
 import numpy as np
 import math
-from camera import cam
-
-ROBOT_WIDTH = 118
-ROBOT_HEIGHT = 118
-IMG_COLS = 320
-IMG_ROWS = 240
+from image_stream import ImageStream
+from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images
 
 
 # ccw
@@ -88,17 +84,6 @@ def get_stitched_image(Images, robot_width=118, robot_height=118, img_cols=320, 
 
 
 def main():
-
-	top_cam = cv.VideoCapture(1)
-	# left_cam = cv.VideoCapture(2)
-	# right_cam = cv.VideoCapture(3)
-	# bot_cam = cv.VideoCapture(4)
-
-	# Images
-	top = cam("top", top_cam, -45, ROBOT_WIDTH // 2, ROBOT_HEIGHT // 2)
-
-	images = [top]
-
 	try:
 		while True:
 			cv.imshow('Birds Eye View', get_stitched_image(images, ROBOT_WIDTH, ROBOT_HEIGHT, IMG_COLS, IMG_ROWS))

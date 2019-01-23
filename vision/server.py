@@ -3,19 +3,7 @@ from SocketServer import ThreadingMixIn
 from PIL import Image
 import StringIO
 from stitching import get_stitched_image
-import cv2 as cv
-from camera import cam
-
-
-ROBOT_WIDTH = 118
-ROBOT_HEIGHT = 118
-IMG_COLS = 320
-IMG_ROWS = 240
-
-top_cam = cv.VideoCapture(1)
-top = cam("top", top_cam, -45, ROBOT_WIDTH // 2, ROBOT_HEIGHT // 2)
-
-images = [top]
+from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images
 
 
 class CamHandler(BaseHTTPRequestHandler):
