@@ -1,7 +1,6 @@
 import cv2 as cv
 import numpy as np
 import math
-from image_stream import ImageStream
 from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images
 
 
@@ -34,20 +33,34 @@ def rotate_point(center_x, center_y, point_x, point_y, theta):
 # dst should be larger than src
 def add_image(src, dst, dst_x, dst_y, src_x, src_y):
 	src_rows, src_cols, src_ch = src.shape
-	dst[dst_y - src_y:dst_y + (src_rows - src_y), dst_x - src_x: dst_x + (src_cols - src_x), :] \
-		= cv.add(dst[dst_y - src_y:dst_y + (src_rows - src_y), dst_x - src_x: dst_x + (src_cols - src_x), :], src[:, :, :])
-	return src
+
+	roi = dst[dst_y - src_y:dst_y + (src_rows - src_y), dst_x - src_x: dst_x + (src_cols - src_x), :]
+
+	src_gray = cv.cvtColor(src, cv.COLOR_RGB2GRAY)
+
+	ret, mask = cv.threshold(src_gray, 10, 255, cv.THRESH_BINARY)
+	mask_inv = cv.bitwise_not(mask)
+
+	# Now black-out the area of logo in ROI
+	dst_bg = cv.bitwise_and(roi, roi, mask=mask_inv)
+	# Take only region of logo from logo image.
+	src_fg = cv.bitwise_and(src, src, mask=mask)
+
+	combined = cv.add(dst_bg, src_fg)
+
+	dst[dst_y - src_y:dst_y + (src_rows - src_y), dst_x - src_x: dst_x + (src_cols - src_x), :] = combined
+	return dst
 
 
 # cameras is an array of arrays.
 # The array takes in the videostream, the x and y location on the final image, and the orientation
-def get_stitched_image(Images, robot_width=118, robot_height=118, img_cols=320, img_rows=240):
+def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_cols=320, img_rows=240):
 
-	images = [img.camera.read() for img in Images]
+	images = [img.camera.read() for img in image_streams]
 
 	for idx, img in enumerate(images):
 		if img[0] is False:
-			print("Could not read ", Images[idx].name)
+			print("Could not read ", image_streams[idx].name)
 
 	images[:] = [img for img in images if img[0] is True]
 
@@ -69,9 +82,9 @@ def get_stitched_image(Images, robot_width=118, robot_height=118, img_cols=320, 
 	birds_eye = np.zeros((buffered_image_size * 2 + robot_width, buffered_image_size * 2 + robot_height, 3), dtype=np.uint8)
 
 	for idx, img in enumerate(warped_images):
-		theta = Images[idx].rotation
-		x_shift = Images[idx].x_shift
-		y_shift = Images[idx].y_shift
+		theta = image_streams[idx].rotation
+		x_shift = image_streams[idx].x_shift
+		y_shift = image_streams[idx].y_shift
 		img = add_buffer(img)
 		img = rotate_image(img, theta)
 
