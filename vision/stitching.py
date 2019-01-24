@@ -56,26 +56,26 @@ def add_image(src, dst, dst_x, dst_y, src_x, src_y):
 # The array takes in the videostream, the x and y location on the final image, and the orientation
 def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_cols=320, img_rows=240):
 
-	images = [img.camera.read() for img in image_streams]
+	imgs = [img.camera.read() for img in image_streams]
 
-	for idx, img in enumerate(images):
+	for idx, img in enumerate(imgs):
 		if img[0] is False:
-			print("Could not read ", image_streams[idx].name)
+			print "Could not read % top" % image_streams[idx].name
 
-	images[:] = [img for img in images if img[0] is True]
+	imgs[:] = [img for img in imgs if img[0] is True]
 
-	images[:] = [img[1] for img in images] # to only keep the stream
+	imgs[:] = [img[1] for img in imgs] # to only keep the stream
 
-	images[:] = [cv.resize(img, (img_cols, img_rows)) for img in images]
+	imgs[:] = [cv.resize(img, (img_cols, img_rows)) for img in imgs]
 
-	images[:] = [cv.cvtColor(img, cv.COLOR_BGR2RGB) for img in images]
+	imgs[:] = [cv.cvtColor(img, cv.COLOR_BGR2RGB) for img in imgs]
 
 	src = np.float32([[46 // 4, 642 // 4], [272 // 4, 395 // 4], [924 // 4, 395 // 4], [1184 // 4, 642 // 4]])
 	dst = np.float32([[430 // 4, 960 // 4], [430 // 4, 540 // 4], [850 // 4, 540 // 4], [850 // 4, 960 // 4]])
 
 	M = cv.getPerspectiveTransform(src, dst)
 
-	warped_images = [cv.warpPerspective(img, M, (img_cols, img_rows)) for img in images]
+	warped_images = [cv.warpPerspective(img, M, (img_cols, img_rows)) for img in imgs]
 
 	buffered_image_size = int(math.sqrt(img_rows ** 2 + img_cols ** 2))
 
@@ -91,7 +91,7 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 		# point assumed to be bottom center of the image
 		img_point = rotate_point(img.shape[1] // 2, img.shape[0] // 2, img.shape[1] // 2, img.shape[0] - (buffered_image_size - img_rows) // 2, theta)
 
-		add_image(img, birds_eye, birds_eye.shape[1] // 2 + x_shift, birds_eye.shape[0] // 2  - y_shift, img_point[0], img_point[1])
+		add_image(img, birds_eye, birds_eye.shape[1] // 2 + x_shift, birds_eye.shape[0] // 2 - y_shift, img_point[0], img_point[1])
 
 	return birds_eye
 
