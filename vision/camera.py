@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+import glob
 
 cap = cv.VideoCapture(1)
 counter = 0
@@ -9,15 +10,16 @@ def main():
         # Capture frame-by-frame
         ret, frame = cap.read()
 
-        frame = cv.resize(frame, (640, 480))
+        #frame = cv.resize(frame, (640, 480))
+        cv.imshow('resized', frame)
 
         rows, cols, ch = frame.shape
 
         print("rows:", rows, "cols: ", cols, "ch: ", ch)
 
-        src = np.float32([[46 // 2, 642 // 2], [272 // 2, 395 // 2], [924 // 2, 395 // 2], [1184 // 2, 642 // 2]])
+        src = np.float32([[94 * 2, 480 * 2], [226 * 2, 268 * 2], [409 * 2, 269 * 2], [548 * 2, 480 * 2]])
 
-        dst = np.float32([[430 // 2, 960 // 2], [430 // 2, 540 // 2], [850 // 2, 540 // 2], [850 // 2, 960 // 2]])
+        dst = np.float32([[286 * 2, 480 * 2], [286 * 2, 320 * 2], [354 * 2, 320 * 2], [354 * 2, 480 * 2]])
 
         M = cv.getPerspectiveTransform(src, dst)
 
@@ -27,7 +29,7 @@ def main():
         key = cv.waitKey(1)
         # Display the resulting frame
         cv.imshow('warped', transformed)
-        cv.imshow('original', frame)
+
         if key & 0xFF == ord('q'):
             break
 

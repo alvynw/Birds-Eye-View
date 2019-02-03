@@ -60,7 +60,7 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
 	for idx, img in enumerate(imgs):
 		if img[0] is False:
-			print "Could not read % top" % image_streams[idx].name
+			print ("Could not read % top" % image_streams[idx].name)
 
 	imgs[:] = [img for img in imgs if img[0] is True]
 
@@ -68,10 +68,13 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
 	imgs[:] = [cv.resize(img, (img_cols, img_rows)) for img in imgs]
 
-	imgs[:] = [cv.cvtColor(img, cv.COLOR_BGR2RGB) for img in imgs]
+	#imgs[:] = [cv.cvtColor(img, cv.COLOR_BGR2RGB) for img in imgs]
 
-	src = np.float32([[46 // 4, 642 // 4], [272 // 4, 395 // 4], [924 // 4, 395 // 4], [1184 // 4, 642 // 4]])
-	dst = np.float32([[430 // 4, 960 // 4], [430 // 4, 540 // 4], [850 // 4, 540 // 4], [850 // 4, 960 // 4]])
+
+	#60 deg
+	src = np.float32([[170, 480], [207, 301], [436, 301], [473, 480]])
+
+	dst = np.float32([[430 // 2, 960 // 2], [430 // 2, 540 // 2], [850 // 2, 540 // 2], [850 // 2, 960 // 2]])
 
 	M = cv.getPerspectiveTransform(src, dst)
 
