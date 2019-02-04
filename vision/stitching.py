@@ -60,7 +60,8 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
 	for idx, img in enumerate(imgs):
 		if img[0] is False:
-			print ("Could not read % top" % image_streams[idx].name)
+			print image_streams[idx].name
+			#print ("Could not read % top" % image_streams[idx].name)
 
 	imgs[:] = [img for img in imgs if img[0] is True]
 
