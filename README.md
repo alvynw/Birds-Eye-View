@@ -5,6 +5,6 @@ The method used is symlinks.
 ```
 KERNEL=="video*", ATTRS{serial}=="F2814710", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="081b", SYMLINK+="LOGITECH_C310_TOP"
 ```
-3. To use the symlink, pass your symlink as a parameter to `connectcamera(symlink)`. For example, if you used the example above, you would do `connectCamera("LOGITECH_C310_TOP")`
+3. To use the symlink, pass your symlink as a parameter to `connectCamera(symlink)`. For example, if you used the example above, you would do `connectCamera("LOGITECH_C310_TOP")`
 
 
