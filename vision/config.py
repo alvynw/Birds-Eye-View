@@ -8,35 +8,37 @@ ROBOT_HEIGHT = 223
 IMG_COLS = 320
 IMG_ROWS = 240
 
-suffixes = ["TOP", "LEFT", "RIGHT", "BOT"]
+devices = ["LOGITECH_C310_TOP", "LOGITECH_C310_LEFT", "LOGITECH_C310_RIGHT", "LOGITECH_C310_BOT"]
+devices_config = [["TOP", 0, 0, ROBOT_HEIGHT // 2], ["LEFT", 90, -ROBOT_WIDTH // 2, 0 ], ["RIGHT", -90, ROBOT_WIDTH // 2, 0], ["BOT", 180, 0, -ROBOT_HEIGHT // 2]]
 
-def connectCamera(suffix):
-	cmd = "readlink -f /dev/LOGITECH_C310_%s" % (suffix) 
+def connectCamera(device):
+	cmd = "readlink -f /dev/%s" % (device) 
 	process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
 	print process
 	# output of form /dev/videoX
-	time.sleep(5)
+	time.sleep(0.25)
 	t = process.poll()
 	if (t is not None):
 		out = process.communicate()[0]
-		print "process is not none"
-		# parse for ints
-		nums = [int(x) for x in out if x.isdigit()]
-		return [True, nums[0]]
+		device_re = re.compile("^\\dev\\video(\d+)")
+		if (device_re.match(out)):
+			video_id = device_re.group(1)
+			return [True, video_id]
+		else:
+			print "%s not found" % (device)				
 	else:
-		print "process is none"
-		proc.kill()
-		print(suffix)
-		return [False, -1]
+		print "%s not found" % (device)
+	proc.kill()
+	return [False, -1]
+images = []
 
-bot_cam = cv.VideoCapture(connectCamera("BOT")[1])
+for index, device in enumerate(devices):
+	ret, camera_id = connectCamera(device)
+	if (ret):
+		config = devices_config[index]
+		images.append(ImageStream(config[0], VideoCapture(camera_id), config[1], config[2], config[3])
 
-#top = ImageStream("top", top_cam, 0, 0, ROBOT_HEIGHT // 2)
-#left = ImageStream("left", left_cam, 90, -ROBOT_WIDTH // 2, 0)
 
-bot = ImageStream("right", bot_cam, 180, 0, -ROBOT_HEIGHT // 2)
-
-images = [bot]
 
 # x is 127.5 deg from base
 #        cam
