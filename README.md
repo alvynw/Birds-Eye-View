@@ -1,5 +1,3 @@
-# Birds-Eye-View
-
 ## Making Camera Ports Persistant in Ubuntu
 The method used is symlinks.
 1. Create a file under `/etc/udev/rules.d` called `25-birds-eye.rules`.
