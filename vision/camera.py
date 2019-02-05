@@ -5,7 +5,6 @@ import subprocess
 
 cmd = "readlink -f /dev/LOGITECH_C310_BOT"
 process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-print process
 # output of form /dev/videoX
 out = process.communicate()[0]
 
@@ -21,16 +20,16 @@ def main():
         ret, frame = cap.read()
         #print(ret)
 	if ret is True:
-		frame = cv.resize(frame, (640, 480))
+		frame = cv.resize(frame, (320, 240))
 		cv.imshow('resized', frame)
 
 		rows, cols, ch = frame.shape
 
 		#print("rows:", rows, "cols: ", cols, "ch: ", ch)
 
-		src = np.float32([[94, 480], [226, 268], [409, 269], [548, 480]])
+		src = np.float32([[170 // 2, 480 // 2], [207 // 2, 301 // 2], [436 // 2, 301 // 2], [473 // 2, 480 // 2]])
 
-		dst = np.float32([[286, 480], [286, 320], [354, 320], [354, 480]])
+		dst = np.float32([[430 // 4, 960 // 4], [430 // 4, 540 // 4], [850 // 4, 540 // 4], [850 // 4, 960 // 4]])
 
 		M = cv.getPerspectiveTransform(src, dst)
 
