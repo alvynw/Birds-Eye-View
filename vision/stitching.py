@@ -101,7 +101,6 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
 def main():
 	try:
-		print images
 		while True:
 			cv.imshow('Birds Eye View', get_stitched_image(images, ROBOT_WIDTH, ROBOT_HEIGHT, IMG_COLS, IMG_ROWS))
 			cv.waitKey(1)

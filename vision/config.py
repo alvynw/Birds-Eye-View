@@ -18,7 +18,7 @@ def connectCamera(device):
     print cmd
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     # output of form /dev/videoX
-    time.sleep(0.25)
+    time.sleep(0.1)
     t = process.poll()
     if (t is not None):
         out = process.communicate()[0]
@@ -26,6 +26,7 @@ def connectCamera(device):
         if (re.match(pattern, out)):
             video_id = int(re.search(pattern, out).group(1))
             print video_id
+            
             return [True, video_id]
         else:
             print "%s not found1" % (device)
@@ -47,6 +48,11 @@ for index, device in enumerate(devices):
     if ret:
         config = devices_config[index]
         cam = cv.VideoCapture(camera_id)
+        cam.set(cv.cv.CV_CAP_PROP_FPS, 60)
+        cam.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 320)
+	cam.set(cv.cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
+	print "hi"
+	cam.set(cv.cv.CV_CAP_PROP_FOURCC, cv.cv.CV_FOURCC('M', 'J', 'P', 'G'))
         images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
 
 # x is 127.5 deg from base
