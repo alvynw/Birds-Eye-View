@@ -55,20 +55,18 @@ def add_image(src, dst, dst_x, dst_y, src_x, src_y):
 # cameras is an array of arrays.
 # The array takes in the videostream, the x and y location on the final image, and the orientation
 def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_cols=320, img_rows=240):
-
+	
 	imgs = [img.camera.read() for img in image_streams]
-
+	
 	for idx, img in enumerate(imgs):
 		if img[0] is False:
-			print "Could not read % top" % image_streams[idx].name
+			print "Could not read %s top" % (image_streams[idx].name)
 
 	imgs[:] = [img for img in imgs if img[0] is True]
 
 	imgs[:] = [img[1] for img in imgs] # to only keep the stream
 
-	imgs[:] = [cv.resize(img, (img_cols, img_rows)) for img in imgs]
-
-	#imgs[:] = [cv.cvtColor(img, cv.COLOR_BGR2RGB) for img in imgs]
+	imgs[:] = [cv.resize(img, (img_cols, img_rows)) for img in imgs
 
 	M = cv.getPerspectiveTransform(src, dst)
 
@@ -101,6 +99,7 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
 def main():
 	try:
+		print images
 		while True:
 			cv.imshow('Birds Eye View', get_stitched_image(images, ROBOT_WIDTH, ROBOT_HEIGHT, IMG_COLS, IMG_ROWS))
 			cv.waitKey(1)
