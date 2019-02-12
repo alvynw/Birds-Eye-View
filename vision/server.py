@@ -4,7 +4,8 @@ from PIL import Image
 import StringIO
 from stitching import get_stitched_image
 from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images
-
+import time
+import benchmark
 
 class CamHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -13,7 +14,10 @@ class CamHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'multipart/x-mixed-replace; boundary=--jpgboundary')
             self.end_headers()
-
+	    counter = 0
+	    lastRequest = time.time()
+ 	    acc_latency = 0
+     	    acc_fps = 0
             while True:
                 try:
                     birds_eye = get_stitched_image(images, ROBOT_WIDTH, ROBOT_HEIGHT, IMG_COLS, IMG_ROWS)
@@ -25,6 +29,14 @@ class CamHandler(BaseHTTPRequestHandler):
                     self.send_header('Content-length', str(tmpFile.len))
                     self.end_headers()
                     jpg.save(self.wfile, 'JPEG')
+		    counter = counter + 1
+		    currTime = time.time()
+		    dt = currTime - lastRequest
+		    acc_fps = acc_fps + 1/dt
+ 		    acc_latency = acc_latency + dt
+	            print "running latency average: %s" % (acc_latency / counter)
+		    print "running fps average: %s" % (acc_fps / counter)
+	  	    lastRequest = currTime
                 except KeyboardInterrupt:
                     break
             return
@@ -44,7 +56,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 
 def main():
-    HOST = ''  # localhost
+    HOST = '10.8.46.21'  # localhost
     PORT = 8080
 
     try:
