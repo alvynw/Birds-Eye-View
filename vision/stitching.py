@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import math
-from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images
+from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images, src, dst
 
 
 # ccw
@@ -99,12 +99,13 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
     dst = np.float32([[430 // 4, 960 // 4], [430 // 4, 540 // 4], [850 // 4, 540 // 4], [850 // 4, 960 // 4]])
 
+
     M = cv.getPerspectiveTransform(src, dst)
 
     warped_images = [cv.warpPerspective(img, M, (img_cols, img_rows)) for img in imgs]
 
     buffered_image_size = int(math.sqrt(img_rows ** 2 + img_cols ** 2))
-
+    
     x = robot_width
     y = robot_height
     robot_center_x = x // 2
@@ -115,10 +116,8 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
         x_shift = image_streams[idx].x_shift
         y_shift = image_streams[idx].y_shift
         dst = find_bounds(img, theta)
-
         special_point = rotate_point(img.shape[1] // 2, img.shape[0] // 2, img.shape[1] // 2, img.shape[0], theta,
                                      dst[0] // 2 - img.shape[1] // 2, dst[1] // 2 - img.shape[0] // 2)
-
         #x
         x_pos = robot_center_x + x_shift
         y_pos = robot_center_y + y_shift

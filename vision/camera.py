@@ -3,6 +3,7 @@ import cv2 as cv
 import glob
 import subprocess
 
+
 cmd = "readlink -f /dev/LOGITECH_C310_BOT"
 process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
 # output of form /dev/videoX
@@ -11,7 +12,14 @@ out = process.communicate()[0]
 # parse for ints
 nums = [int(x) for x in out if x.isdigit()]
 
-cap = cv.VideoCapture(nums[0])
+cap = cv.VideoCapture(0)
+print "hello"
+print cap.get(cv.cv.CV_CAP_PROP_FPS)
+fourcc = cv.VideoWriter_fourcc(*'MJPG')
+cap.set(cv.cv.CV_CAP_PROP_FOURCC, fourcc)
+cap.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 320)
+cap.set(cv.cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
+
 counter = 0
 
 def main():
@@ -20,12 +28,12 @@ def main():
         ret, frame = cap.read()
         #print(ret)
 	if ret is True:
-		frame = cv.resize(frame, (320, 240))
+		#frame = cv.resize(frame, (320, 240))
 		cv.imshow('resized', frame)
 
 		rows, cols, ch = frame.shape
 
-		#print("rows:", rows, "cols: ", cols, "ch: ", ch)
+		print("rows:", rows, "cols: ", cols, "ch: ", ch)
 
 		src = np.float32([[170 // 2, 480 // 2], [207 // 2, 301 // 2], [436 // 2, 301 // 2], [473 // 2, 480 // 2]])
 
