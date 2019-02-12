@@ -4,13 +4,20 @@ import subprocess
 import time
 import re
 
-ROBOT_WIDTH = 223
-ROBOT_HEIGHT = 223
+# 320 x 240
+# 80 Degrees from the base
+
+
 IMG_COLS = 320
 IMG_ROWS = 240
 
+ROBOT_WIDTH = 200
+ROBOT_HEIGHT = 200
+
+SMALL_TRAPEZOID_LENGTH = 150
+
 devices = ["LOGITECH_C310_TOP", "LOGITECH_C310_LEFT", "LOGITECH_C310_RIGHT", "LOGITECH_C310_BOT"]
-devices_config = [["TOP", 0, 0, ROBOT_HEIGHT // 2], ["LEFT", 90, -ROBOT_WIDTH // 2, 0], ["RIGHT", -90, ROBOT_WIDTH // 2, 0], ["BOT", 180, 0, -ROBOT_HEIGHT // 2]]
+devices_config = [["TOP", 0, 0, -ROBOT_HEIGHT // 2], ["LEFT", 90, -ROBOT_WIDTH // 2, 0], ["RIGHT", -90, ROBOT_WIDTH // 2, 0], ["BOT", 180, 0, +ROBOT_HEIGHT // 2]]
 
 
 def connectCamera(device):
@@ -43,13 +50,16 @@ images = []
 
 
 for index, device in enumerate(devices):
-    ret, camera_id = connectCamera(device)
-    if ret:
-        config = devices_config[index]
-        cam = cv.VideoCapture(camera_id)
-        images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+    ###mac
+    config = devices_config[index]
+    cam = cv.VideoCapture(1)
+    images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
 
-# x is 127.5 deg from base
-#        cam
-#       /
-# ____x/
+    ###linux
+
+    # ret, camera_id = connectCamera(device)
+    # if ret:
+    #     config = devices_config[index]
+    #     cam = cv.VideoCapture(camera_id)
+    #     images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+
