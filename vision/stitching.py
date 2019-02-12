@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import math
-from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images
+from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images, src, dst
 
 
 # ccw
@@ -68,10 +68,7 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
 	imgs[:] = [cv.resize(img, (img_cols, img_rows)) for img in imgs]
 
-	imgs[:] = [cv.cvtColor(img, cv.COLOR_BGR2RGB) for img in imgs]
-
-	src = np.float32([[46 // 4, 642 // 4], [272 // 4, 395 // 4], [924 // 4, 395 // 4], [1184 // 4, 642 // 4]])
-	dst = np.float32([[430 // 4, 960 // 4], [430 // 4, 540 // 4], [850 // 4, 540 // 4], [850 // 4, 960 // 4]])
+	#imgs[:] = [cv.cvtColor(img, cv.COLOR_BGR2RGB) for img in imgs]
 
 	M = cv.getPerspectiveTransform(src, dst)
 
@@ -80,7 +77,6 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 	buffered_image_size = int(math.sqrt(img_rows ** 2 + img_cols ** 2))
 
 	birds_eye = np.zeros((buffered_image_size * 2 + robot_width, buffered_image_size * 2 + robot_height, 3), dtype=np.uint8)
-
 	for idx, img in enumerate(warped_images):
 		theta = image_streams[idx].rotation
 		x_shift = image_streams[idx].x_shift
@@ -92,6 +88,13 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 		img_point = rotate_point(img.shape[1] // 2, img.shape[0] // 2, img.shape[1] // 2, img.shape[0] - (buffered_image_size - img_rows) // 2, theta)
 
 		add_image(img, birds_eye, birds_eye.shape[1] // 2 + x_shift, birds_eye.shape[0] // 2 - y_shift, img_point[0], img_point[1])
+	
+
+	#birds_eye = np.random.randint(0, 255, (816, 816, 3), dtype= np.uint8)
+	
+	birds_eye = np.zeros((816,816,3), dtype= np.uint8)
+	
+	print birds_eye.shape
 
 	return birds_eye
 
