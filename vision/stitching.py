@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import math
-from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images, src, dst
+from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images, transformation_src, transformation_dst
 
 
 # ccw
@@ -17,6 +17,7 @@ def rotate_image(image, angle):
     special_point = rotate_point(image.shape[1] // 2, image.shape[0] // 2, image.shape[1] // 2, image.shape[0], angle,
                                  dist_x // 2 - image.shape[1] // 2, dist_y // 2 - image.shape[0] // 2)
     return [result, special_point]
+
 
 def find_bounds(image, angle):
     top_right_point = rotate_point(0, 0, image.shape[1] // 2, image.shape[0] // 2, angle)
@@ -37,18 +38,9 @@ def find_bounds(image, angle):
     return [dist_x, dist_y]
 
 
-# def add_buffer(image):
-# 	rows, cols, ch = image.shape
-# 	border = int(math.sqrt(rows ** 2 + cols ** 2))
-# 	horizontal_buffer = border - cols
-# 	vertical_buffer = border - rows
-# 	new = cv.copyMakeBorder(image, vertical_buffer // 2, vertical_buffer // 2, horizontal_buffer // 2, horizontal_buffer // 2, cv.BORDER_CONSTANT, value=(0, 0, 0))
-# 	return new
-
-
 # rotate ccw
 # degrees
-def rotate_point(center_x, center_y, point_x, point_y, theta, shift_x = 0, shift_y = 0):
+def rotate_point(center_x, center_y, point_x, point_y, theta, shift_x=0, shift_y=0):
     theta = theta * np.pi / 180
     rotated_x = (point_x - center_x) * math.cos(theta) + (point_y - center_y) * math.sin(theta) + center_x
     rotated_y = (point_x - center_x) * -math.sin(theta) + (point_y - center_y) * math.cos(theta) + center_y
@@ -80,7 +72,9 @@ def add_image(src, dst, dst_x, dst_y, src_x, src_y):
 # cameras is an array of arrays.
 # The array takes in the videostream, the x and y location on the final image, and the orientation
 def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_cols=320, img_rows=240):
+    # t = time.time()
     imgs = [img.camera.read() for img in image_streams]
+    # print "hello", time.time() - t
 
     for idx, img in enumerate(imgs):
         if img[0] is False:
@@ -92,20 +86,11 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
     imgs[:] = [cv.resize(img, (img_cols, img_rows)) for img in imgs]
 
-    # imgs[:] = [cv.cvtColor(img, cv.COLOR_BGR2RGB) for img in imgs]
 
-    # 80 deg
-    src = np.float32([[170 // 2, 480 // 2], [207 // 2, 301 // 2], [436 // 2, 301 // 2], [473 // 2, 480 // 2]])
-
-    dst = np.float32([[430 // 4, 960 // 4], [430 // 4, 540 // 4], [850 // 4, 540 // 4], [850 // 4, 960 // 4]])
-
-
-    M = cv.getPerspectiveTransform(src, dst)
+    M = cv.getPerspectiveTransform(transformation_src, transformation_dst)
 
     warped_images = [cv.warpPerspective(img, M, (img_cols, img_rows)) for img in imgs]
 
-    buffered_image_size = int(math.sqrt(img_rows ** 2 + img_cols ** 2))
-    
     x = robot_width
     y = robot_height
     robot_center_x = x // 2
@@ -118,7 +103,7 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
         dst = find_bounds(img, theta)
         special_point = rotate_point(img.shape[1] // 2, img.shape[0] // 2, img.shape[1] // 2, img.shape[0], theta,
                                      dst[0] // 2 - img.shape[1] // 2, dst[1] // 2 - img.shape[0] // 2)
-        #x
+        # x
         x_pos = robot_center_x + x_shift
         y_pos = robot_center_y + y_shift
 
@@ -141,16 +126,11 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
     birds_eye = np.zeros((y, x, 3), dtype=np.uint8)
 
     for idx, img in enumerate(warped_images):
-        cv.imshow("pre-rot", img)
         theta = image_streams[idx].rotation
         x_shift = image_streams[idx].x_shift
         y_shift = image_streams[idx].y_shift
         rotated_img, img_point = rotate_image(img, theta)
-
-        cv.imshow("hello", rotated_img)
-
         add_image(rotated_img, birds_eye, robot_center_x + x_shift, robot_center_y + y_shift, img_point[0], img_point[1])
-        birds_eye[robot_center_y+y_shift][robot_center_x+x_shift] = [57, 255, 20]
 
     return birds_eye
 

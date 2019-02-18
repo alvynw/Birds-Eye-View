@@ -5,43 +5,31 @@ import StringIO
 from stitching import get_stitched_image
 from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images
 import time
-import benchmark
+import cv2
+
 
 class CamHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        print("Users wants to get something")
         if self.path.endswith('.mjpg'):
             self.send_response(200)
             self.send_header('Content-type', 'multipart/x-mixed-replace; boundary=--jpgboundary')
             self.end_headers()
-	    counter = 0
-	    lastRequest = time.time()
- 	    acc_latency = 0
-     	    acc_fps = 0
             while True:
                 try:
                     birds_eye = get_stitched_image(images, ROBOT_WIDTH, ROBOT_HEIGHT, IMG_COLS, IMG_ROWS)
+                    birds_eye = cv2.cvtColor(birds_eye, cv2.COLOR_BGR2RGB)
                     jpg = Image.fromarray(birds_eye)
-                    tmpFile = StringIO.StringIO()
-                    jpg.save(tmpFile, 'JPEG')
+                    tmp_file = StringIO.StringIO()
+                    jpg.save(tmp_file, 'JPEG')
                     self.wfile.write("--jpgboundary")
                     self.send_header('Content-type', 'image/jpeg')
-                    self.send_header('Content-length', str(tmpFile.len))
+                    self.send_header('Content-length', str(jpg.size))
                     self.end_headers()
                     jpg.save(self.wfile, 'JPEG')
-		    counter = counter + 1
-		    currTime = time.time()
-		    dt = currTime - lastRequest
-		    acc_fps = acc_fps + 1/dt
- 		    acc_latency = acc_latency + dt
-	            print "running latency average: %s" % (acc_latency / counter)
-		    print "running fps average: %s" % (acc_fps / counter)
-	  	    lastRequest = currTime
                 except KeyboardInterrupt:
                     break
             return
         else:
-            print("html")
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
@@ -60,11 +48,15 @@ def main():
     PORT = 8080
 
     try:
-        server = ThreadedHTTPServer((HOST, PORT), CamHandler)
-        print("Server started at ", HOST, "port ", PORT)
+        server = HTTPServer((HOST, PORT), CamHandler)
+        print "Server started at ", HOST, " port ", PORT
         server.serve_forever()
     except KeyboardInterrupt:
         server.socket.close()
+        print "Server cancelled at ", HOST, "port ", PORT
+    except IOError:
+        server.socket.close()
+        print "Server closed at ", HOST, "port ", PORT
 
 
 if __name__ == "__main__":

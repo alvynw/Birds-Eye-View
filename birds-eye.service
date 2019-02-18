@@ -1,0 +1,12 @@
+[Unit]
+Description=Bird's Eye View
+After=multi-user.target
+
+[Service]
+WorkingDirectory=/home/nvidia/lrt/Birds-Eye-View/vision
+ExecStart=/usr/bin/python server.py
+Restart=always
+RestartSec=3s
+
+[Install]
+WantedBy=multi-user.target
