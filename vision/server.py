@@ -4,7 +4,6 @@ from PIL import Image
 import StringIO
 from stitching import get_stitched_image
 from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images
-import time
 import cv2
 
 

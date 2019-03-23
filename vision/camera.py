@@ -1,8 +1,9 @@
 import numpy as np
 import cv2 as cv
-import glob
 import subprocess
 
+
+print cv.__version__
 
 cmd = "readlink -f /dev/LOGITECH_C310_BOT"
 process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
@@ -12,15 +13,15 @@ out = process.communicate()[0]
 # parse for ints
 nums = [int(x) for x in out if x.isdigit()]
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(1)
 print "hello"
-print cap.get(cv.cv.CV_CAP_PROP_FPS)
-fourcc = cv.VideoWriter_fourcc(*'MJPG')
-cap.set(cv.cv.CV_CAP_PROP_FOURCC, fourcc)
-cap.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 320)
-cap.set(cv.cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
+
+# cap.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 320)
+# cap.set(cv.cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
 
 counter = 0
+
+factor = 2
 
 def main():
     while(True):
@@ -35,9 +36,10 @@ def main():
 
 		print("rows:", rows, "cols: ", cols, "ch: ", ch)
 
-		src = np.float32([[170 // 2, 480 // 2], [207 // 2, 301 // 2], [436 // 2, 301 // 2], [473 // 2, 480 // 2]])
+		# 2560x1920 -- almost full
+		src = np.float32([[478, 1920], [903, 253], [1639, 253], [2035, 1920]]) // factor
 
-		dst = np.float32([[430 // 4, 960 // 4], [430 // 4, 540 // 4], [850 // 4, 540 // 4], [850 // 4, 960 // 4]])
+		dst = np.float32([[980, 1920], [980, 367], [1580, 367], [1580, 1920]]) // factor
 
 		M = cv.getPerspectiveTransform(src, dst)
 
