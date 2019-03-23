@@ -5,7 +5,7 @@ import time
 import re
 import numpy as np
 
-factor = 4
+factor = 8
 
 ROBOT_WIDTH = 700 // factor
 ROBOT_HEIGHT = 700 // factor
@@ -56,31 +56,31 @@ images = []
 for index, device in enumerate(devices):
     ''''''
     ###linux
-    # ret, camera_id = connectCamera(device)
-    # if ret:
-    #     config = devices_config[index]
-    #     cam = cv.VideoCapture(camera_id)
-    #     cam.set(cv.cv.CV_CAP_PROP_FPS, 10)
-    #     cam.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 160)
-    #     cam.set(cv.cv.CV_CAP_PROP_FRAME_HEIGHT, 120)
-    #     print cam.get(cv.cv.CV_CAP_PROP_FRAME_WIDTH)
-    #     print cam.get(cv.cv.CV_CAP_PROP_FRAME_HEIGHT)
-    #     images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+    ret, camera_id = connectCamera(device)
+    if ret:
+         config = devices_config[index]
+         cam = cv.VideoCapture(camera_id)
+         cam.set(cv.cv.CV_CAP_PROP_FPS, 10)
+         cam.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 160)
+         cam.set(cv.cv.CV_CAP_PROP_FRAME_HEIGHT, 120)
+         print cam.get(cv.cv.CV_CAP_PROP_FRAME_WIDTH)
+         print cam.get(cv.cv.CV_CAP_PROP_FRAME_HEIGHT)
+         images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
 
 ###mac
-config = devices_config[0]
-cam = cv.VideoCapture(0)
-images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+#config = devices_config[0]
+#cam = cv.VideoCapture(0)
+#images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
 
-config = devices_config[1]
-cam = cv.VideoCapture(1)
-images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
-config = devices_config[2]
-cam = cv.VideoCapture(2)
-images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
-config = devices_config[3]
-cam = cv.VideoCapture(3)
-images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+#config = devices_config[1]
+#cam = cv.VideoCapture(1)
+#images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+#config = devices_config[2]
+#cam = cv.VideoCapture(2)
+#images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+#config = devices_config[3]
+#cam = cv.VideoCapture(3)
+#images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
 
 for img in images:
     print img.name

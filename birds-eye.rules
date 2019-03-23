@@ -1,4 +1,8 @@
-KERNEL=="video*", ATTRS{serial}=="F2814710", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="081b", SYMLINK+="LOGITECH_C310_TOP"
-KERNEL=="video*", ATTRS{serial}=="72D61130", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="081b", SYMLINK+="LOGITECH_C310_BOT"
-KERNEL=="video*", ATTRS{serial}=="927CC5D0", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="081b", SYMLINK+="LOGITECH_C310_LEFT"
-KERNEL=="video*", ATTRS{serial}=="7BB12130", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="081b", SYMLINK+="LOGITECH_C310_RIGHT"
+ACTION=="add", KERNEL=="video*", ATTRS{serial}=="F2814710", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="081b", SYMLINK+="LOGITECH_C310_TOP", TAG+="systemd", ENV{SYSTEMD_WANTS}="birds-eye.service"
+
+ACTION=="add", KERNEL=="video*", ATTRS{serial}=="72D61130", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="081b", SYMLINK+="LOGITECH_C310_BOT", TAG+="systemd", ENV{SYSTEMD_WANTS}="birds-eye.service"
+
+ACTION=="add", KERNEL=="video*", ATTRS{serial}=="927CC5D0", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="081b", SYMLINK+="LOGITECH_C310_LEFT", TAG+="systemd", ENV{SYSTEMD_WANTS}="birds-eye.service"
+
+ACTION=="add", KERNEL=="video*", ATTRS{serial}=="7BB12130", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="081b", SYMLINK+="LOGITECH_C310_RIGHT", TAG+="systemd", ENV{SYSTEMD_WANTS}="birds-eye.service"
+
