@@ -51,10 +51,11 @@ def main():
         print "Server started at ", HOST, " port ", PORT
         server.serve_forever()
     except KeyboardInterrupt:
+    	print "Keyboard interrupt"
         server.socket.close()
         print "Server cancelled at ", HOST, "port ", PORT
     except IOError:
-        server.socket.close()
+    	print "IO Error"
         print "Server closed at ", HOST, "port ", PORT
 
 
