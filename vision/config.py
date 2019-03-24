@@ -4,6 +4,9 @@ import subprocess
 import time
 import re
 import numpy as np
+import glob
+
+counter = 0
 
 factor = 8
 
@@ -81,6 +84,8 @@ for index, device in enumerate(devices):
 #config = devices_config[3]
 #cam = cv.VideoCapture(3)
 #images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+
+counter = len(glob.glob("/dev/video*"))
 
 for img in images:
     print img.name

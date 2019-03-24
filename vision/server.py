@@ -3,9 +3,13 @@ from SocketServer import ThreadingMixIn
 from PIL import Image
 import StringIO
 from stitching import get_stitched_image
-from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images
+from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images, counter
 import cv2
-
+import thread
+import glob
+from threading import Thread
+import sys
+import time
 
 class CamHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -41,11 +45,24 @@ class CamHandler(BaseHTTPRequestHandler):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     '''Threads stuff'''
 
+toRun = True
+
+def checkNewCam():
+    while toRun:
+	time.sleep(0.5)
+    	if len(glob.glob("/dev/video*")) != counter:
+    	    print "New video device detected"
+    	    print "Interrupting main thread"
+	    thread.interrupt_main()
+	    sys.exit(0)
 
 def main():
     HOST = '10.8.46.21'  # localhost
     PORT = 8080
-
+    print "starting checking thread"
+    thread = Thread(target=checkNewCam, args=())
+    thread.start()
+    print "finished starting checking thread"
     try:
         server = HTTPServer((HOST, PORT), CamHandler)
         print "Server started at ", HOST, " port ", PORT
@@ -53,6 +70,8 @@ def main():
     except KeyboardInterrupt:
     	print "Keyboard interrupt"
         server.socket.close()
+        global toRun
+        toRun = False
         print "Server cancelled at ", HOST, "port ", PORT
     except IOError:
     	print "IO Error"

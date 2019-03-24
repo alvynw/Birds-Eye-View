@@ -3,6 +3,7 @@ Description=Bird's Eye View
 After=multi-user.target
 
 [Service]
+Type=Simple
 WorkingDirectory=/home/nvidia/lrt/Birds-Eye-View/vision
 ExecStart=/usr/bin/python server.py
 Restart=always
