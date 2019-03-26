@@ -3,7 +3,7 @@ from SocketServer import ThreadingMixIn
 from PIL import Image
 import StringIO
 from stitching import get_stitched_image
-from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images, counter
+from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images, counter, devices
 import cv2
 import thread
 import glob
@@ -48,13 +48,12 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 toRun = True
 
 def checkNewCam():
-    while toRun:
-	time.sleep(0.5)
-    	if len(glob.glob("/dev/video*")) != counter:
-    	    print "New video device detected"
-    	    print "Interrupting main thread"
-	    thread.interrupt_main()
-	    sys.exit(0)
+    for dev in devices.keys():
+    	if dev not in images:
+    		ret, camera_id = connectCamera(dev)
+    		if ret:
+    			setUpCamera(dev, camera_id)
+    time.sleep(0.5)
 
 def main():
     HOST = '10.8.46.21'  # localhost
@@ -71,7 +70,6 @@ def main():
     	print "Keyboard interrupt"
         server.socket.close()
         global toRun
-        toRun = False
         print "Server cancelled at ", HOST, "port ", PORT
     except IOError:
     	print "IO Error"

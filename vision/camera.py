@@ -13,7 +13,7 @@ out = process.communicate()[0]
 # parse for ints
 nums = [int(x) for x in out if x.isdigit()]
 
-cap = cv.VideoCapture(1)
+cap = cv.VideoCapture(3)
 print "hello"
 
 # cap.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 320)
@@ -30,6 +30,7 @@ def main():
         #print(ret)
 	if ret is True:
 		#frame = cv.resize(frame, (320, 240))
+		print "aasdfasdf"
 		cv.imshow('resized', frame)
 
 		rows, cols, ch = frame.shape
@@ -63,5 +64,6 @@ def main():
     cap.release()
     cv.destroyAllWindows()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    print "in main"
     main()
