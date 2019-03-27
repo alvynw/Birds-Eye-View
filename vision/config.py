@@ -18,10 +18,10 @@ IMG_ROWS = 1920 // factor
 # transformation
 # 85 deg
 
-#2560x1920
+# 2560x1920
 transformation_src = np.float32([[300, 1920], [918, 1051], [1674, 1058], [2260, 1920]]) // factor
 
-#almost full
+# almost full
 transformation_dst = np.float32([[980, 1920], [980, 367], [1580, 367], [1580, 1920]]) // factor
 
 # 80Deg
@@ -32,29 +32,29 @@ transformation_dst = np.float32([[980, 1920], [980, 367], [1580, 367], [1580, 19
 #
 # [478, 1920], [903, 253], [1639, 253], [2035, 1920]
 
-#devices = ["LOGITECH_C310_TOP", "LOGITECH_C310_LEFT", "LOGITECH_C310_BOT", "LOGITECH_C310_RIGHT"]
-#devices = ["LOGITECH_C310_TOP"]
+# devices = ["LOGITECH_C310_TOP", "LOGITECH_C310_LEFT", "LOGITECH_C310_BOT", "LOGITECH_C310_RIGHT"]
+# devices = ["LOGITECH_C310_TOP"]
 device_configs = {
-        "LOGITECH_C310_TOP":[0, 0, -ROBOT_HEIGHT // 2], 
-        "LOGITECH_C310_LEFT":[90, -ROBOT_WIDTH // 2, 0], 
-        "LOGITECH_C310_BOT":[180, 0, ROBOT_HEIGHT // 2], 
-        "LOGITECH_C310_RIGHT":[-90, ROBOT_WIDTH // 2, 0]
+    "LOGITECH_C310_TOP": [0, 0, -ROBOT_HEIGHT // 2],
+    "LOGITECH_C310_LEFT": [90, -ROBOT_WIDTH // 2, 0],
+    "LOGITECH_C310_BOT": [180, 0, ROBOT_HEIGHT // 2],
+    "LOGITECH_C310_RIGHT": [-90, ROBOT_WIDTH // 2, 0]
 }
 
 devices = {
-        "LOGITECH_C310_TOP":None, 
-        "LOGITECH_C310_LEFT":None, 
-        "LOGITECH_C310_BOT":None, 
-        "LOGITECH_C310_RIGHT":None
+    "LOGITECH_C310_TOP": None,
+    "LOGITECH_C310_LEFT": None,
+    "LOGITECH_C310_BOT": None,
+    "LOGITECH_C310_RIGHT": None
 }
-
 
 device_load_counter = {
-		"LOGITECH_C310_TOP":0, 
-        "LOGITECH_C310_LEFT":0, 
-        "LOGITECH_C310_BOT":0, 
-        "LOGITECH_C310_RIGHT":0
+    "LOGITECH_C310_TOP": 0,
+    "LOGITECH_C310_LEFT": 0,
+    "LOGITECH_C310_BOT": 0,
+    "LOGITECH_C310_RIGHT": 0
 }
+
 
 def connectCamera(device):
     cmd = "readlink -f /dev/%s" % (device)
@@ -62,7 +62,7 @@ def connectCamera(device):
         out = subprocess.check_output(cmd.split())
         pattern = "^/dev/video(\d+)"
         if (re.match(pattern, out)):
-        	device_load_counter[device] = device_load_counter[device] + 1
+            device_load_counter[device] = device_load_counter[device] + 1
             video_id = int(re.search(pattern, out).group(1))
             # print video_id
 
@@ -72,44 +72,44 @@ def connectCamera(device):
         print "%s not found" % (device)
         return [False, -1]
 
+
 def setUpDevice(device, camera_id):
-	config = device_configs[device]
-	print "setting cam"
-	cam = cv.VideoCapture(camera_id)
-	cam.set(cv.cv.CV_CAP_PROP_FPS, 10)
-	cam.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 160)
-	cam.set(cv.cv.CV_CAP_PROP_FRAME_HEIGHT, 120)
-	print cam.get(cv.cv.CV_CAP_PROP_FRAME_WIDTH)
-	print cam.get(cv.cv.CV_CAP_PROP_FRAME_HEIGHT)
-	devices[device] = ImageStream(device, cam, config[0], config[1], config[2])
-	images.append(device)
+    config = device_configs[device]
+    print "setting cam"
+    cam = cv.VideoCapture(camera_id)
+    cam.set(cv.cv.CV_CAP_PROP_FPS, 10)
+    cam.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 160)
+    cam.set(cv.cv.CV_CAP_PROP_FRAME_HEIGHT, 120)
+    print cam.get(cv.cv.CV_CAP_PROP_FRAME_WIDTH)
+    print cam.get(cv.cv.CV_CAP_PROP_FRAME_HEIGHT)
+    devices[device] = ImageStream(device, cam, config[0], config[1], config[2])
+    images.append(device)
+
 
 images = []
 
 for i in range(0, 3):
-	for device in devices.keys():
-		''''''
-		###linux
-		ret, camera_id = connectCamera(device)
-		if ret and device_load_counter[device] >= 3:
-			 setUpDevice(device, camera_id)
-         
-
+    for device in devices.keys():
+        ''''''
+        ###linux
+        ret, camera_id = connectCamera(device)
+        if ret and device_load_counter[device] >= 3:
+            setUpDevice(device, camera_id)
 
 ###mac
-#config = devices_config[0]
-#cam = cv.VideoCapture(0)
-#images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+# config = devices_config[0]
+# cam = cv.VideoCapture(0)
+# images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
 
-#config = devices_config[1]
-#cam = cv.VideoCapture(1)
-#images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
-#config = devices_config[2]
-#cam = cv.VideoCapture(2)
-#images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
-#config = devices_config[3]
-#cam = cv.VideoCapture(3)
-#images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+# config = devices_config[1]
+# cam = cv.VideoCapture(1)
+# images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+# config = devices_config[2]
+# cam = cv.VideoCapture(2)
+# images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
+# config = devices_config[3]
+# cam = cv.VideoCapture(3)
+# images.append(ImageStream(config[0], cam, config[1], config[2], config[3]))
 
 counter = len(glob.glob("/dev/video*"))
 
@@ -118,4 +118,3 @@ for img in images:
     t = time.time()
     devices[img].camera.read()
     print time.time() - t
-
