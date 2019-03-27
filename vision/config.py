@@ -8,7 +8,7 @@ import glob
 
 counter = 0
 
-factor = 4
+factor = 8
 
 ROBOT_WIDTH = 700 // factor
 ROBOT_HEIGHT = 700 // factor
@@ -49,7 +49,12 @@ devices = {
 }
 
 
-
+device_load_counter = {
+		"LOGITECH_C310_TOP":0, 
+        "LOGITECH_C310_LEFT":0, 
+        "LOGITECH_C310_BOT":0, 
+        "LOGITECH_C310_RIGHT":0
+}
 
 def connectCamera(device):
     cmd = "readlink -f /dev/%s" % (device)
@@ -57,6 +62,7 @@ def connectCamera(device):
         out = subprocess.check_output(cmd.split())
         pattern = "^/dev/video(\d+)"
         if (re.match(pattern, out)):
+        	device_load_counter[device] = device_load_counter[device] + 1
             video_id = int(re.search(pattern, out).group(1))
             # print video_id
 
@@ -68,6 +74,7 @@ def connectCamera(device):
 
 def setUpDevice(device, camera_id):
 	config = device_configs[device]
+	print "setting cam"
 	cam = cv.VideoCapture(camera_id)
 	cam.set(cv.cv.CV_CAP_PROP_FPS, 10)
 	cam.set(cv.cv.CV_CAP_PROP_FRAME_WIDTH, 160)
@@ -79,12 +86,13 @@ def setUpDevice(device, camera_id):
 
 images = []
 
-for device in devices.keys():
-    ''''''
-    ###linux
-    ret, camera_id = connectCamera(device)
-    if ret:
-    	 setUpDevice(device, camera_id)
+for i in range(0, 3):
+	for device in devices.keys():
+		''''''
+		###linux
+		ret, camera_id = connectCamera(device)
+		if ret and device_load_counter[device] >= 3:
+			 setUpDevice(device, camera_id)
          
 
 
@@ -110,3 +118,4 @@ for img in images:
     t = time.time()
     devices[img].camera.read()
     print time.time() - t
+

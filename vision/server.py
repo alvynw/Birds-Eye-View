@@ -52,7 +52,7 @@ def checkNewCam():
     	if dev not in images:
     		ret, camera_id = connectCamera(dev)
     		if ret:
-    			setUpCamera(dev, camera_id)
+    			setUpDevice(dev, camera_id)
     time.sleep(0.5)
 
 def main():

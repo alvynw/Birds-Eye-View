@@ -1,8 +1,9 @@
 import cv2 as cv
 import numpy as np
 import math
-from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images, transformation_src, transformation_dst, devices
-
+from config import ROBOT_HEIGHT, ROBOT_WIDTH, IMG_COLS, IMG_ROWS, images, transformation_src, transformation_dst, devices, connectCamera, setUpDevice
+from threading import Thread
+import time
 
 # ccw
 def rotate_image(image, angle):
@@ -13,8 +14,6 @@ def rotate_image(image, angle):
     rot_mat[0][2] += dst.shape[0] // 2 - image.shape[1] // 2
     rot_mat[1][2] += dst.shape[1] // 2 - image.shape[0] // 2
     result = cv.warpAffine(image, rot_mat, (dist_x, dist_y), flags=cv.INTER_LINEAR)
-
-    print "result of warpAffine", result.shape
 
     special_point = rotate_point(image.shape[1] // 2, image.shape[0] // 2, image.shape[1] // 2, image.shape[0], angle,
                                  dist_x // 2 - image.shape[1] // 2, dist_y // 2 - image.shape[0] // 2)
@@ -51,7 +50,6 @@ def rotate_point(center_x, center_y, point_x, point_y, theta, shift_x=0, shift_y
 
 # dst should be larger than src
 def add_image(src, dst, dst_x, dst_y, src_x, src_y):
-    print src.shape
     src_rows, src_cols, src_ch = src.shape
 
     roi = dst[dst_y - src_y:dst_y + (src_rows - src_y), dst_x - src_x: dst_x + (src_cols - src_x), :]
@@ -89,14 +87,9 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
         else:
             imgs[index] = img[1]
 
-    print "a;sdkljf;alsdkfj", imgs[0].shape
-
-    print "yyyyyyy"
-
     for index, img in enumerate(imgs):
         if img is not None:
             imgs[index] = cv.resize(img, (img_cols, img_rows))
-    print "bar", imgs[0].shape
 
     M = cv.getPerspectiveTransform(transformation_src, transformation_dst)
 
@@ -105,8 +98,6 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
     for index, img in enumerate(imgs):
         if img is not None:
             warped_images[index] = cv.warpPerspective(img, M, (img_cols, img_rows))
-
-    print "foo", warped_images[0].shape
 
     x = robot_width
     y = robot_height
@@ -145,7 +136,6 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
     for idx, img in enumerate(warped_images):
         if img is not None:
-            print "wooo"
             theta = devices[image_streams[idx]].rotation
             x_shift = devices[image_streams[idx]].x_shift
             y_shift = devices[image_streams[idx]].y_shift
@@ -154,16 +144,33 @@ def get_stitched_image(image_streams, robot_width=118, robot_height=118, img_col
 
     return birds_eye
 
+def checkNewCam():
+	time.sleep(2)
+	while True:
+		for dev in devices.keys():
+			if dev not in images:
+				ret, camera_id = connectCamera(dev)
+				if ret:
+					print ";aksjd;fkajsd;fkasdjf;aldfj"
+					print dev
+					setUpDevice(dev, camera_id - 1)
+		time.sleep(2)
 
 def main():
     try:
-        print images
+    	thread = Thread(target=checkNewCam, args=())
+    	thread.setDaemon(True)
+    	thread.start()
         while True:
             cv.imshow('Birds Eye View', get_stitched_image(images, ROBOT_WIDTH, ROBOT_HEIGHT, IMG_COLS, IMG_ROWS))
-            print len(images)
             cv.waitKey(1)
     except KeyboardInterrupt:
         print "\nStopping program."
+    finally:
+	for img in images:
+		devices[img].camera.release()
+	cv.destroyAllWindows()
+        
 
 
 if __name__ == "__main__":
